@@ -25,7 +25,6 @@ def connectdb():
       found = True
   if found == False:
     mycursor.execute("CREATE TABLE BOOKING_TABLE (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(50), src_location VARCHAR(100), dest_location VARCHAR(100), class CHAR(1), booking_status VARCHAR(100), payment_method VARCHAR(100), travel_date DATETIME)")
-  
 
 connectdb()
 
@@ -45,8 +44,6 @@ def root():
     return booking(request.json['data'])
   else:
     return "Failed"
-#jsonify(request.json)
-
 
 if __name__ == '__main__':
   api.run()
