@@ -59,6 +59,12 @@ def root():
         mycursor.execute(sql)
         mydb.commit()
 
+    def create_credit_card_user():
+        sql = "INSERT INTO CREDIT_CARD_TABLE(balance) VALUES (10000)"
+        mycursor.execute(sql)
+        mydb.commit()
+        return "ISSUED NEW CREDIT CARD NO: {}".format(mycursor.rowcount)
+
     def is_booked(id):
         sql = "SELECT * FROM BOOKING_TABLE WHERE booking_id="+str(id)
         mycursor.execute(sql)
@@ -71,6 +77,12 @@ def root():
     def confirm_booking(id, card_number):
         sql = "UPDATE BOOKING_TABLE SET booking_status=%s, payment_method=%s, card_number=%s WHERE booking_id=%s" 
         mycursor.execute(sql, ("CONFIRMED", "CREDIT_CARD", card_number, id))
+        mydb.commit()
+        return mycursor.rowcount
+
+    def update_flight(booking_id, date, flight_id):
+        sql = "UPDATE BOOKING_TABLE SET flight_id=%s, travel_date=%s WHERE booking_id=%s" 
+        mycursor.execute(sql, (flight_id, date, booking_id))
         mydb.commit()
         return mycursor.rowcount
 
@@ -206,14 +218,36 @@ def root():
             status, message = make_transaction(id, card_number, amount, 'debit')
             return message
 
+    def update_date(data):
+        date = date_converter(data['travel_date'])
+        if is_past_date(date) == True:
+            return "travel date Cannot be older than current date"
+        id = data['booking_id']
+        status, record = is_booked(id)
+        if status == False:
+            return "No reservation Available. Please check the booking id"
+        else:
+            if date == record[8]:
+                return "Reschedule date is same as booked date.!!!"
+            flight_id = record[9]
+            passengers = get_no_of_passengers(flight_id)
+            if passengers == 1:
+                delete_flight_schedule(flight_id)
+            flight_id = Schedule_flight(record[2], record[3], date, 'booking')
+            return "Congratulations!!! your flight has been rescheduled. New flight id is {}".format(update_flight(id, date, flight_id))
+
+        
+
     if request.json['type'] == "booking":
         return booking(request.json['data'])
     elif request.json['type'] == "cancel":
         return cancel(request.json['data'])
     elif request.json['type'] == "payment":
         return confirm_payment(request.json['data'])
-    # elif request.json['type'] == "update-date":
-    #     return change_date(request.json['data'])
+    elif request.json['type'] == "update-date":
+        return update_date(request.json['data'])
+    elif request.json['type'] == "credit-card":
+        return create_credit_card_user()
     # elif request.json['type'] == "add-on":
     #     return cancel(request.json['data'])
     # elif request.json['type'] == "add-on":
