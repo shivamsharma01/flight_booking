@@ -24,7 +24,7 @@ def connectdb():
     mycursor.execute("SHOW TABLES")
 
     dictionary = {
-        'booking_table': "CREATE TABLE BOOKING_TABLE (booking_id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(50), src_location VARCHAR(100), dest_location VARCHAR(100), class CHAR(1), booking_status VARCHAR(100), payment_method VARCHAR(100), card_number INT UNSIGNED, travel_date DATE, flight_id INT UNSIGNED)",
+        'booking_table': "CREATE TABLE BOOKING_TABLE (booking_id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(50), src_location VARCHAR(100), dest_location VARCHAR(100), class CHAR(1), booking_status VARCHAR(100), payment_method VARCHAR(100), card_number INT UNSIGNED, travel_date DATE, flight_id INT UNSIGNED, add_on VARCHAR(100))",
         'schedule_table': "CREATE TABLE SCHEDULE_TABLE (flight_id INT AUTO_INCREMENT PRIMARY KEY, src_location VARCHAR(100), dest_location VARCHAR(100), travel_date DATE)",
         'credit_card_table': "CREATE TABLE CREDIT_CARD_TABLE (card_number INT AUTO_INCREMENT PRIMARY KEY, balance INT)",
     }
@@ -85,6 +85,15 @@ def root():
         mycursor.execute(sql, (flight_id, date, booking_id))
         mydb.commit()
         return mycursor.rowcount
+    
+    def add_luggage(booking_id, card_number):
+        status, message = make_transaction(booking_id, card_number, 500, 'debit')
+        if status == False:
+            return message
+        sql = "UPDATE BOOKING_TABLE SET add_on=%s WHERE booking_id=%s" 
+        mycursor.execute(sql, ("YES", booking_id))
+        mydb.commit()
+        return "Congratulations!!! Luggage Facility is updated."
 
     def is_Scheduled(src, dest, date):
         sql = "SELECT * FROM SCHEDULE_TABLE WHERE src_location=%s AND dest_location=%s AND travel_date=%s"
@@ -107,7 +116,6 @@ def root():
         return status
 
     def make_transaction(booking_id, card_number, amount, t_type):
-        print("{} {} {} {}".format(booking_id, card_number, amount, t_type))
         sql = "SELECT * FROM CREDIT_CARD_TABLE WHERE card_number="+str(card_number)
         mycursor.execute(sql)
         record = mycursor.fetchone()
@@ -154,7 +162,7 @@ def root():
             return "travel date Cannot be older than current date"
         flight_id = Schedule_flight(
             data['src_location'], data['dest_location'], date, 'booking')
-        sql = 'insert into BOOKING_TABLE(name, src_location, dest_location, class, booking_status, payment_method, travel_date, flight_id) VALUES (%s, %s, %s, %s, "PENDING", "PENDING", %s, %s)'
+        sql = 'insert into BOOKING_TABLE(name, src_location, dest_location, class, booking_status, payment_method, travel_date, flight_id, add_on) VALUES (%s, %s, %s, %s, "PENDING", "PENDING", %s, %s, "NO")'
         mycursor.execute(sql, (data['name'], data['src_location'], data['dest_location'],
                                data['class'], date, flight_id))
         mydb.commit()
@@ -189,7 +197,6 @@ def root():
         msg = ''
         if (record[5] == 'CONFIRMED'):
             card_number = int(record[7])
-            print(card_number)
             amount = price[record[4]]*.5
             status, msg = make_transaction(id, card_number, amount, 'credit')
         flight_id = record[9]
@@ -236,7 +243,18 @@ def root():
             flight_id = Schedule_flight(record[2], record[3], date, 'booking')
             return "Congratulations!!! your flight has been rescheduled. New flight id is {}".format(update_flight(id, date, flight_id))
 
-        
+    def add_on(data):
+        id = data['booking_id']
+        card_number = data['card_number']
+        status, record = is_booked(id)
+        if status == False:
+            return "No reservation Available. Please check the booking id"
+        elif (record[5] == 'PENDING'):
+            return "Cannot add luggage facility!!! Flight is not confirmed."
+        elif (record[10] == "YES"):
+            return "Luggage Facility Already Availed!!!"
+        else:
+            return add_luggage(id, card_number)
 
     if request.json['type'] == "booking":
         return booking(request.json['data'])
@@ -248,10 +266,8 @@ def root():
         return update_date(request.json['data'])
     elif request.json['type'] == "credit-card":
         return create_credit_card_user()
-    # elif request.json['type'] == "add-on":
-    #     return cancel(request.json['data'])
-    # elif request.json['type'] == "add-on":
-    #     return cancel(request.json['data'])
+    elif request.json['type'] == "add-on":
+        return add_on(request.json['data'])
     else:
         return "Failed"
 
