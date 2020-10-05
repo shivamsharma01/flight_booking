@@ -3,7 +3,11 @@ from datetime import datetime
 import dateutil.parser
 from flask import Flask, request, jsonify, json
 
+from flask_cors import CORS
+
 api = Flask(__name__)
+CORS(api)
+
 
 mydb = None
 mycursor = None
@@ -75,22 +79,23 @@ def root():
             return True, record
 
     def confirm_booking(id, card_number):
-        sql = "UPDATE BOOKING_TABLE SET booking_status=%s, payment_method=%s, card_number=%s WHERE booking_id=%s" 
+        sql = "UPDATE BOOKING_TABLE SET booking_status=%s, payment_method=%s, card_number=%s WHERE booking_id=%s"
         mycursor.execute(sql, ("CONFIRMED", "CREDIT_CARD", card_number, id))
         mydb.commit()
         return mycursor.rowcount
 
     def update_flight(booking_id, date, flight_id):
-        sql = "UPDATE BOOKING_TABLE SET flight_id=%s, travel_date=%s WHERE booking_id=%s" 
+        sql = "UPDATE BOOKING_TABLE SET flight_id=%s, travel_date=%s WHERE booking_id=%s"
         mycursor.execute(sql, (flight_id, date, booking_id))
         mydb.commit()
         return mycursor.rowcount
-    
+
     def add_luggage(booking_id, card_number):
-        status, message = make_transaction(booking_id, card_number, 500, 'debit')
+        status, message = make_transaction(
+            booking_id, card_number, 500, 'debit')
         if status == False:
             return message
-        sql = "UPDATE BOOKING_TABLE SET add_on=%s WHERE booking_id=%s" 
+        sql = "UPDATE BOOKING_TABLE SET add_on=%s WHERE booking_id=%s"
         mycursor.execute(sql, ("YES", booking_id))
         mydb.commit()
         return "Congratulations!!! Luggage Facility is updated."
@@ -116,7 +121,8 @@ def root():
         return status
 
     def make_transaction(booking_id, card_number, amount, t_type):
-        sql = "SELECT * FROM CREDIT_CARD_TABLE WHERE card_number="+str(card_number)
+        sql = "SELECT * FROM CREDIT_CARD_TABLE WHERE card_number=" + \
+            str(card_number)
         mycursor.execute(sql)
         record = mycursor.fetchone()
         if mycursor.rowcount == 0:
@@ -159,14 +165,14 @@ def root():
     def booking(data):
         date = date_converter(data['travel_date'])
         if is_past_date(date) == True:
-            return "travel date Cannot be older than current date"
+            return {"error": True, "message": "travel date Cannot be older than current date"}
         flight_id = Schedule_flight(
             data['src_location'], data['dest_location'], date, 'booking')
         sql = 'insert into BOOKING_TABLE(name, src_location, dest_location, class, booking_status, payment_method, travel_date, flight_id, add_on) VALUES (%s, %s, %s, %s, "PENDING", "PENDING", %s, %s, "NO")'
         mycursor.execute(sql, (data['name'], data['src_location'], data['dest_location'],
                                data['class'], date, flight_id))
         mydb.commit()
-        return "{}{}".format("FLY-", mycursor.lastrowid)
+        return {"error": False, "message": "{}{}".format("FLY-", mycursor.lastrowid)}
 
     '''
 
@@ -193,7 +199,7 @@ def root():
         status, record = is_booked(id)
         if status == False:
             return "No reservation Available. Please check the booking id"
-        
+
         msg = ''
         if (record[5] == 'CONFIRMED'):
             card_number = int(record[7])
@@ -222,7 +228,8 @@ def root():
         else:
             flight_class = record[4]
             amount = price[flight_class]
-            status, message = make_transaction(id, card_number, amount, 'debit')
+            status, message = make_transaction(
+                id, card_number, amount, 'debit')
             return message
 
     def update_date(data):

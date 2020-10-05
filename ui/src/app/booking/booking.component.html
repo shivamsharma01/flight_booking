@@ -1,0 +1,80 @@
+<div class="parent" *ngIf="!clickedBookTicket">
+  <form [formGroup]="bookingForm">
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-4">
+          <span>
+            <div>
+              <label>
+                From:
+              </label>
+              <input formControlName="src" type="text" pInputText placeholder="Source Airport" />
+            </div>
+          </span>
+        </div>
+        <div class="col-sm-4">
+          <span>
+            <div>
+              <label>
+                To:
+              </label>
+              <input formControlName="destination" type="text" pInputText placeholder="Destination Airport" />
+            </div>
+          </span>
+        </div>
+        <div class="col-sm-4">
+          <label style="display:block;">
+            Departure:
+          </label>
+          <p-calendar pstyle="width:100%;" formControlName="departureDate"></p-calendar>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-4">
+          <label style="display:block;">
+            Choose Class:
+          </label>
+          <p-dropdown formControlName="class" [options]="travelClass" placeholder="Select Class" [virtualScroll]="true"
+            [itemSize]="31" [filter]="false"></p-dropdown>
+        </div>
+        <div class="col-sm-4">
+          <label>
+            First Name:
+          </label>
+          <input type="text" formControlName="name" placeholder="Passenger Name" pInputText />
+        </div>
+        <div class="col-sm-4">
+          <button class="booking" (click)="bookTicket()">Book Ticket</button>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+
+<div class="parent" *ngIf="clickedBookTicket" style="text-align: center;">
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-6">
+        <form [formGroup]="paymentForm">
+          <h4>Enter your Credit Card details</h4>
+          <div class="inner">
+            <div>
+              <div>
+                <label style="font-weight: bold;">
+                  Credit Card Number:
+                  <input style="padding-left: 10px;" formControlName="ccNumber" type="text"
+                    placeholder="Credit Card Number" pInputText />
+                </label>
+              </div>
+            </div>
+          </div>
+          <div>
+            <button (click)="makePayment()">Make Payment</button>
+          </div>
+        </form>
+      </div>
+      <div class="col-sm-6" style="margin: auto">
+        <button (click)="cancelBooking()">Cancel Booking</button></div>
+    </div>
+  </div>
+</div>

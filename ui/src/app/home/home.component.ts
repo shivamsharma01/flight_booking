@@ -15,5 +15,4 @@ export class HomeComponent implements OnInit {
   ngOnInit(): void {
     this._mainService.getData().subscribe(data => this.testObj = data)
   }
-
 }
