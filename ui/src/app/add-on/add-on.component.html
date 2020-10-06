@@ -1,0 +1,32 @@
+<div class="parent">
+    <h1>Avail Extra Luggage Facility @ Rs.500</h1>
+    <form [formGroup]="addOnForm">
+        <div class="container">
+            <div class="row" style="padding-top: 30px;">
+                <div class="col-sm-4">
+                    <span>
+                        <div>
+                            <label>
+                                Booking Id:
+                            </label>
+                            <input formControlName="bookingid" type="text" pInputText placeholder="Booking Id" />
+                        </div>
+                    </span>
+                </div>
+                <div class="col-sm-4">
+                    <span>
+                        <div>
+                            <label>
+                                Credit Card Number:
+                            </label>
+                            <input formControlName="ccNumber" type="text" pInputText placeholder="cc number" />
+                        </div>
+                    </span>
+                </div>
+                <div class="col-sm-4 bookClass">
+                    <button class="booking-button" (click)="makePayment()">Avail Extra Luggage Facility</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

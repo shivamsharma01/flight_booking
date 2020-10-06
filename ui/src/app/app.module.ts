@@ -14,15 +14,24 @@ import { InputTextModule } from 'primeng/inputtext';
 import { CalendarModule } from 'primeng/calendar';
 import { CheckboxModule } from 'primeng/checkbox';
 import { TableModule } from 'primeng/table';
+import { ToastModule } from "primeng/toast";
 import { DropdownModule } from 'primeng/dropdown';
-import { BookingHistoryComponent } from './booking-history/booking-history.component';
+
+import { MessageService } from 'primeng/api';
+import { AddOnComponent } from './add-on/add-on.component';
+import { CancelBookingComponent } from './cancel-booking/cancel-booking.component';
+import { ChangeDateComponent } from './change-date/change-date.component';
+import { ConfirmBookingComponent } from './confirm-booking/confirm-booking.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
     BookingComponent,
-    BookingHistoryComponent
+    AddOnComponent,
+    CancelBookingComponent,
+    ChangeDateComponent,
+    ConfirmBookingComponent
   ],
   imports: [
     BrowserModule,
@@ -36,9 +45,10 @@ import { BookingHistoryComponent } from './booking-history/booking-history.compo
     DropdownModule,
     FormsModule,
     TableModule,
-    CheckboxModule
+    CheckboxModule,
+    ToastModule,
   ],
-  providers: [MainService],
+  providers: [MainService, MessageService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -1,0 +1,21 @@
+<div class="parent">
+    <form [formGroup]="cancelForm">
+        <div class="container">
+            <div class="row" style="padding-top: 70px;">
+                <div class="col-sm-6">
+                    <span>
+                        <div>
+                            <label>
+                                Booking Id:
+                            </label>
+                            <input formControlName="bookingid" type="text" pInputText placeholder="Booking Id" />
+                        </div>
+                    </span>
+                </div>
+                <div class="col-sm-6 bookClass">
+                    <button class="booking-button" (click)="cancelBooking()">Cancel Booking</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

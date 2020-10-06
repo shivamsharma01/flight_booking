@@ -1,0 +1,28 @@
+<div class="parent">
+    <form [formGroup]="changeForm">
+      <div class="container">
+        <div class="row" style="padding-top: 70px;">
+          <div class="col-sm-4">
+            <span>
+              <div>
+                <label>
+                  Booking Id:
+                </label>
+                <input formControlName="bookingid" type="text" pInputText placeholder="Booking Id" />
+              </div>
+            </span>
+          </div>
+          <div class="col-sm-4">
+            <label style="display:block;">
+              New Departure Date:
+            </label>
+            <p-calendar pstyle="width:100%;" formControlName="departureDate"></p-calendar>
+          </div>
+          <div class="col-sm-4 bookClass">
+            <button class="booking-button" (click)="changeDate()">Request Date Change</button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+  

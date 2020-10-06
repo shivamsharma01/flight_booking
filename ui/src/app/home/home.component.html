@@ -1,3 +1,4 @@
+<p-toast></p-toast>
 <div>
     <h1>Welcome to IIITD Flight Booking System!!</h1>
 </div>
@@ -6,11 +7,20 @@
         <p-tabPanel header="Book Ticket">
             <app-booking></app-booking>
         </p-tabPanel>
-        <p-tabPanel header="My Bookings">
+        <!-- <p-tabPanel header="My Bookings">
             <app-booking-history></app-booking-history>
+        </p-tabPanel> -->
+        <p-tabPanel header="Cancel Booking">
+            <app-cancel-booking></app-cancel-booking>
         </p-tabPanel>
-        <p-tabPanel header="Support">
-            <p>Support Component</p>
+        <p-tabPanel header="Confirm Booking">
+            <app-confirm-booking></app-confirm-booking>
+        </p-tabPanel>
+        <p-tabPanel header="Change Date">
+            <app-change-date></app-change-date>
+        </p-tabPanel>
+        <p-tabPanel header="Add-Ons">
+            <app-add-on></app-add-on>
         </p-tabPanel>
     </p-tabView>
 </div>

@@ -43,8 +43,13 @@
           </label>
           <input type="text" formControlName="name" placeholder="Passenger Name" pInputText />
         </div>
-        <div class="col-sm-4">
-          <button class="booking" (click)="bookTicket()">Book Ticket</button>
+        <div class="col-sm-4 bookClass">
+          <button class="booking-button submit-button" (click)="bookTicket()">Book Ticket</button>
+        </div>
+      </div>
+      <div class="row" *ngIf="price">
+        <div class="col-sm-12">
+          <h2>Price: {{price}}</h2>
         </div>
       </div>
     </div>
@@ -54,9 +59,9 @@
 <div class="parent" *ngIf="clickedBookTicket" style="text-align: center;">
   <div class="container">
     <div class="row">
-      <div class="col-sm-6">
+      <div class="col-sm-4 align-self-start">
         <form [formGroup]="paymentForm">
-          <h4>Enter your Credit Card details</h4>
+          <h4>Confirm Booking by paying Rs.{{price}}</h4>
           <div class="inner">
             <div>
               <div>
@@ -68,13 +73,19 @@
               </div>
             </div>
           </div>
-          <div>
-            <button (click)="makePayment()">Make Payment</button>
-          </div>
         </form>
       </div>
-      <div class="col-sm-6" style="margin: auto">
-        <button (click)="cancelBooking()">Cancel Booking</button></div>
+    </div>
+    <div class="row">
+      <div class="col-sm-4">
+        <button class="submit-button" (click)="makePayment()">Make Payment</button>
+      </div>
+      <div class="col-sm-4" style="margin: auto">
+        <button (click)="cancelBooking()">Cancel Booking</button>
+      </div>
+      <div class="col-sm-4" style="margin: auto">
+        <button (click)="initForms()">Booking Another</button>
+      </div>
     </div>
   </div>
 </div>

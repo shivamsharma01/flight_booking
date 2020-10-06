@@ -5,3 +5,58 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .p-calendar, .p-dropdown  {
     width: 100%;
   }
+  .parent{ background: #999999;padding:10px;overflow: visible; height: 300px;}
+
+  .inner {
+    overflow: visible;
+    padding:10px;
+}
+
+.parent2{ background: #999999;padding:10px;overflow: visible;}
+
+.inner2 {
+    overflow: visible;
+    padding:10px;
+}
+
+.datepicker {
+    float: left;
+    margin:20px;
+    padding: 10px;
+  }
+
+.child {
+    float: left;
+    margin:20px;
+}
+.child2 {
+  float: left;
+  margin:20px;
+}
+
+.center {
+    margin: auto;
+    padding-left: 600px;
+    padding-right: 600px;
+  }
+
+  .row {
+    padding: 20px 0px 20px 0px;
+  }
+
+  label {
+    font-weight: bold;
+  }
+
+  input {
+    width: 100%;
+  }
+
+.booking-button {
+  width: 100%;
+  height: 100%;
+  width: 150px;
+}
+.bookClass {
+  padding: 35px 0px 0px 80px;
+}
