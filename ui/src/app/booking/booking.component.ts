@@ -8,7 +8,6 @@ import { BookingService } from './booking.service';
   styleUrls: ['./booking.component.css']
 })
 export class BookingComponent implements OnInit {
-  dictionary = { 'B': 10000, 'E': 5000, 'F': 20000 };
   bookingForm: FormGroup;
   paymentForm: FormGroup;
   travelClass: any[] = [{ label: 'Ecomomy', value: 'E' }, { label: 'Business', value: 'B' }, { label: 'First class', value: 'F' }];
@@ -22,6 +21,7 @@ export class BookingComponent implements OnInit {
   }
 
   bookTicket() {
+    console.log(this.bookingForm.value)
     if (this._bookingService.validateBooking(this.bookingForm.value)) {
       this._bookingService.bookTicket(this.bookingForm.value).subscribe((data: any) => {
         console.log(data);
@@ -84,7 +84,7 @@ export class BookingComponent implements OnInit {
       ccNumber: new FormControl('')
     });
     this.bookingForm.get('class').valueChanges.subscribe(val => {
-      this.price = this.dictionary[val];
+      this.price = this._bookingService.dictionary[val];
     })
   }
 

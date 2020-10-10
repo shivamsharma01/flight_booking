@@ -1,0 +1,113 @@
+<div class="parent" *ngIf="!clickedDetails">
+    <form [formGroup]="detailsForm">
+        <div class="container">
+            <div class="row" style="padding-top: 70px;">
+                <div class="col-sm-6">
+                    <span>
+                        <div>
+                            <label>
+                                Booking Id:
+                            </label>
+                            <input formControlName="bookingid" type="text" pInputText placeholder="Booking Id" />
+                        </div>
+                    </span>
+                </div>
+                <div class="col-sm-6 bookClass">
+                    <button class="booking-button" (click)="viewBooking()">Show Booking Details</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<div class="parent" *ngIf="clickedDetails">
+    <form [formGroup]="bookingForm">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-4">
+                    <span>
+                        <div>
+                            <label>
+                                From:
+                            </label>
+                            <input formControlName="src" type="text" pInputText placeholder="Source Airport" />
+                        </div>
+                    </span>
+                </div>
+                <div class="col-sm-4">
+                    <span>
+                        <div>
+                            <label>
+                                To:
+                            </label>
+                            <input formControlName="destination" type="text" pInputText
+                                placeholder="Destination Airport" />
+                        </div>
+                    </span>
+                </div>
+                <div class="col-sm-4">
+                    <label style="display:block;">
+                        Departure:
+                    </label>
+                    <input formControlName="departureDate" type="text" pInputText placeholder="Destination Airport" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4">
+                    <label style="display:block;">
+                        Choose Class:
+                    </label>
+                    <input formControlName="class" type="text" pInputText placeholder="Destination Airport" />
+                </div>
+                <div class="col-sm-4">
+                    <label>
+                        Name:
+                    </label>
+                    <input type="text" formControlName="name" placeholder="Passenger Name" pInputText />
+                </div>
+                <div class="col-sm-4">
+                    <label>
+                        Scheduled Flight Id:
+                    </label>
+                    <input type="text" formControlName="flightId" placeholder="Flight Id" pInputText />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4">
+                    <label style="display:block;">
+                        Booking Status:
+                    </label>
+                    <input formControlName="bookingstatus" type="text" pInputText placeholder="Booking Status" />
+                </div>
+                <div class="col-sm-4">
+                    <label>
+                        Payment Method:
+                    </label>
+                    <input type="text" formControlName="paymentmethod" placeholder="Payment Method" pInputText />
+                </div>
+                <div class="col-sm-4">
+                    <label>
+                        Card Number:
+                    </label>
+                    <input type="text" formControlName="cardnumber" placeholder="Card Number" pInputText />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4">
+                    <label style="display:block;">
+                        Add On:
+                    </label>
+                    <input formControlName="addon" type="text" pInputText placeholder="addon" />
+                </div>
+                <div class="col-sm-4">
+                    <label>
+                        Ticket Price:
+                    </label>
+                    <input type="text" formControlName="price" placeholder="Price" pInputText />
+                </div>
+                <div class="col-sm-4 bookClass">
+                    <button class="booking-button submit-button" (click)="initForms()">Check Another</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

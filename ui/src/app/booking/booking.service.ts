@@ -8,6 +8,7 @@ import { MessageService } from 'primeng/api';
   providedIn: 'root'
 })
 export class BookingService {
+  dictionary = { 'B': 10000, 'E': 5000, 'F': 20000 };
 
   constructor(private _http: HttpClient, private messageService: MessageService) { }
 
@@ -75,7 +76,7 @@ export class BookingService {
         "src_location": bookingObj.src,
         "dest_location": bookingObj.destination,
         "class": bookingObj.class,
-        "travel_date": bookingObj.departureDate,
+        "travel_date": new Date(bookingObj.departureDate).toLocaleDateString(),
       }
     }, { headers, responseType: 'text' as 'json' });
   }
@@ -116,7 +117,7 @@ export class BookingService {
       "type": "update-date",
       "data": {
         "booking_id": changeObj.bookingid,
-        "travel_date": changeObj.departureDate
+        "travel_date": new Date(changeObj.departureDate).toLocaleDateString()
       }
     }, { headers, responseType: 'text' as 'json' });
   }
@@ -128,6 +129,16 @@ export class BookingService {
       "data": {
         "booking_id": changeObj.bookingid,
         "card_number": changeObj.ccNumber
+      }
+    }, { headers, responseType: 'text' as 'json' });
+  }
+
+  viewTicket(booking_id: any): Observable<any> {
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json', })
+    return this._http.post<any>('http://127.0.0.1:5000/flightbooking/', {
+      "type": "details",
+      "data": {
+        "booking_id": booking_id
       }
     }, { headers, responseType: 'text' as 'json' });
   }

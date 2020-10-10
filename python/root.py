@@ -1,20 +1,17 @@
 import mysql.connector
 from datetime import datetime
 import dateutil.parser
-from flask import Flask, request, jsonify, json
-
+from flask import Flask, request
 from flask_cors import CORS
 
 api = Flask(__name__)
 CORS(api)
 
-
 mydb = None
 mycursor = None
 
-
+# this function will be called when application is loaded. This db instance will be used across to access the db
 def connectdb():
-
     print("starting db")
     global mydb
     global mycursor
@@ -27,6 +24,7 @@ def connectdb():
     mycursor = mydb.cursor()
     mycursor.execute("SHOW TABLES")
 
+    # Create the below tables if not already present in the db
     dictionary = {
         'booking_table': "CREATE TABLE BOOKING_TABLE (booking_id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(50), src_location VARCHAR(100), dest_location VARCHAR(100), class CHAR(1), booking_status VARCHAR(100), payment_method VARCHAR(100), card_number INT UNSIGNED, travel_date DATE, flight_id INT UNSIGNED, add_on VARCHAR(100))",
         'schedule_table': "CREATE TABLE SCHEDULE_TABLE (flight_id INT AUTO_INCREMENT PRIMARY KEY, src_location VARCHAR(100), dest_location VARCHAR(100), travel_date DATE)",
@@ -39,18 +37,31 @@ def connectdb():
     for (t_name, comm) in dictionary.items():
         if t_name not in tables:
             mycursor.execute(comm)
+            if (t_name == 'credit_card_table')
+            mycursor.execute(
+                "INSERT INTO CREDIT_CARD_TABLE(balance) VALUES (10000)")
+        mydb.commit()
+
+# the root of the entire application/root node in the cartesian/modular structure
 
 
 @api.route('/flightbooking/', methods=["POST"])
 def root():
+    # predefined ticket prices B = business class, E = economy class, F = First class
     price = {'B': 10000, 'E': 5000, 'F': 20000}
 
+    # utility function for date. Returns only date part
     def date_converter(date):
         return dateutil.parser.parse(date).date()
 
+    # validation function for date
     def is_past_date(date):
+        print(datetime.date)
+        print(datetime.now().date())
+        print(date)
         return date < datetime.now().date()
 
+    # no of passengers in the flight (specific date and from a particular source to Destination)
     def get_no_of_passengers(flight_id):
         sql = "SELECT count(*) FROM BOOKING_TABLE WHERE flight_id=" + \
             str(flight_id)
@@ -58,17 +69,20 @@ def root():
         record = mycursor.fetchone()
         return record[0]
 
+    # When the last booking in a particular flight is cancelled / no of passengers = 0
     def delete_flight_schedule(flight_id):
         sql = "DELETE FROM SCHEDULE_TABLE WHERE flight_id="+str(flight_id)
         mycursor.execute(sql)
         mydb.commit()
 
+    # Used to make a valid entry in db in credit card table
     def create_credit_card_user():
         sql = "INSERT INTO CREDIT_CARD_TABLE(balance) VALUES (10000)"
         mycursor.execute(sql)
         mydb.commit()
         return "ISSUED NEW CREDIT CARD NO: {}".format(mycursor.rowcount)
 
+    # check if the booking_id exists in db
     def is_booked(id):
         sql = "SELECT * FROM BOOKING_TABLE WHERE booking_id="+str(id)
         mycursor.execute(sql)
@@ -78,18 +92,21 @@ def root():
         else:
             return True, record
 
+    # confirms the booking after valid credit card details are entered
     def confirm_booking(id, card_number):
         sql = "UPDATE BOOKING_TABLE SET booking_status=%s, payment_method=%s, card_number=%s WHERE booking_id=%s"
         mycursor.execute(sql, ("CONFIRMED", "CREDIT_CARD", card_number, id))
         mydb.commit()
         return mycursor.rowcount
 
+    # maps a booking with a flight
     def update_flight(booking_id, date, flight_id):
         sql = "UPDATE BOOKING_TABLE SET flight_id=%s, travel_date=%s WHERE booking_id=%s"
         mycursor.execute(sql, (flight_id, date, booking_id))
         mydb.commit()
         return mycursor.rowcount
 
+    # adds luggae entry for the mentioned booking id if credit card details are valid
     def add_luggage(booking_id, card_number):
         status, message = make_transaction(
             booking_id, card_number, 500, 'debit')
@@ -100,6 +117,7 @@ def root():
         mydb.commit()
         return "Congratulations!!! Luggage Facility is updated."
 
+    # check if there is a flight schedule from given source to destination on a given day
     def is_Scheduled(src, dest, date):
         sql = "SELECT * FROM SCHEDULE_TABLE WHERE src_location=%s AND dest_location=%s AND travel_date=%s"
         mycursor.execute(sql, (src, dest, date))
@@ -109,6 +127,7 @@ def root():
         else:
             return True, record
 
+    # schedule a flight from given source to destination on a given day
     def Schedule_flight(src, dest, date, request_type):
         status, record = is_Scheduled(src, dest, date)
         if (request_type == 'booking'):
@@ -120,6 +139,7 @@ def root():
             return record[0]
         return status
 
+    # debit/credit from given credit card
     def make_transaction(booking_id, card_number, amount, t_type):
         sql = "SELECT * FROM CREDIT_CARD_TABLE WHERE card_number=" + \
             str(card_number)
@@ -130,8 +150,8 @@ def root():
         else:
             sql = "UPDATE CREDIT_CARD_TABLE SET balance = %s WHERE card_number=%s"
             if t_type == 'credit':
-                amount = int(record[1]) + int(amount)
-                mycursor.execute(sql, (amount, card_number))
+                new_amount = int(record[1]) + int(amount)
+                mycursor.execute(sql, (new_amount, card_number))
                 mydb.commit()
                 return True, 'Rs.{} refunded.'.format(amount)
             else:
@@ -140,27 +160,13 @@ def root():
                 mydb.commit()
                 confirm_booking(booking_id, card_number)
                 return True, "Booking Confirmed"
+
     '''
-
-    request payload 
-    {
-        "type": "booking",
-        "data": {
-            "name": "Fourth",
-            "src_location": "Delhi",
-            "dest_location": "Mumbai",
-            "class": "B",
-            "travel_date": "2020-09-27 15:37:53.706358"
-        }
-    }
-
-    response error
-        travel date Cannot be older than current date
-        
-    response success
-    {
-        "FLY-XXXX" //XXXX is the booking id
-    }
+    Function to book a ticket from source to destination
+        - validate date- should not be a date from past
+        - schedule a flight from given source to destination on a given day if user is the first passenger 
+        - add entry in booking take
+        - returns booking id
     '''
     def booking(data):
         date = date_converter(data['travel_date'])
@@ -175,31 +181,18 @@ def root():
         return {"error": False, "message": "{}{}".format("FLY-", mycursor.lastrowid)}
 
     '''
-
-    request payload 
-    {
-        "type": "cancel",
-        "data": {
-            "id": "3"
-        }
-    }
-
-    response error
-        "No reservation Available. Please check the booking id"
-        "Flight could not be canceled"
-        
-    response success
-    {
-        "Flight with bookingid X canceled"
-    }
+    Function to cancel a ticket using booking id
+        - validate booking - entry should be present
+        - if ticket is not confirmed - cancel the flight
+        - if ticket is confirmed - deduct 50% amount and refund remaining to the attached credit card number
+        - no refund for luggage
+        - returns a message
     '''
-
     def cancel(data):
         id = data['booking_id']
         status, record = is_booked(id)
         if status == False:
-            return "No reservation Available. Please check the booking id"
-
+            return {"error": True, "message": "No reservation Available. Please check the booking id"}
         msg = ''
         if (record[5] == 'CONFIRMED'):
             card_number = int(record[7])
@@ -213,55 +206,92 @@ def root():
         mycursor.execute(sql)
         mydb.commit()
         if mycursor.rowcount == 0:
-            return "Flight could not be canceled"
+            return {"error": True, "message": "Flight could not be canceled"}
         else:
-            return "Flight with bookingid {} canceled. {}".format(id, msg)
+            return {"error": False, "message": "Flight with bookingid {} canceled. {}".format(id, msg)}
 
+    '''
+    Function to confirm a ticket using booking id and credit card number
+        - validate booking - entry should be present
+        - validate status - status should be pending
+        - validate credit card - should be a valid credit card
+        - returns a message
+    '''
     def confirm_payment(data):
         id = data['booking_id']
         card_number = data['card_number']
         status, record = is_booked(id)
         if status == False:
-            return "No reservation Available. Please check the booking id"
+            return {"error": True, "message": "No reservation Available. Please check the booking id"}
         elif (record[5] == 'CONFIRMED'):
-            return "This Flight is already Confirmed!!!"
+            return {"error": True, "message": "This Flight is already Confirmed!!!"}
         else:
             flight_class = record[4]
             amount = price[flight_class]
             status, message = make_transaction(
                 id, card_number, amount, 'debit')
-            return message
+            return {"error": False, "message": message}
 
+    '''
+    Function to change the date using booking id
+        - validate date - should not be a date from past
+        - validate date - should be a different date
+        - validate booking - entry should be present
+        - validate status - status should be confirmed
+        - validate date - should be a different date
+        - returns a message
+    '''
     def update_date(data):
         date = date_converter(data['travel_date'])
         if is_past_date(date) == True:
-            return "travel date Cannot be older than current date"
+            return {"error": True, "message": "travel date Cannot be older than current date"}
         id = data['booking_id']
         status, record = is_booked(id)
         if status == False:
-            return "No reservation Available. Please check the booking id"
+            return {"error": True, "message": "No reservation Available. Please check the booking id"}
         else:
             if date == record[8]:
-                return "Reschedule date is same as booked date.!!!"
+                return {"error": True, "message": "Reschedule date is same as booked date.!!!"}
             flight_id = record[9]
             passengers = get_no_of_passengers(flight_id)
             if passengers == 1:
                 delete_flight_schedule(flight_id)
             flight_id = Schedule_flight(record[2], record[3], date, 'booking')
-            return "Congratulations!!! your flight has been rescheduled. New flight id is {}".format(update_flight(id, date, flight_id))
+            return {"error": False, "message": "Congratulations!!! your flight has been rescheduled. New flight id is {}".format(update_flight(id, date, flight_id))}
 
+    '''
+    Function to add luggage to the booking
+        - validate credit card - should be a valid credit card
+        - validate booking - entry should be present
+        - validate booking status - status should be confirmed
+        - validate add on status - should not be already confirmed 
+        - returns a message
+    '''
     def add_on(data):
         id = data['booking_id']
         card_number = data['card_number']
         status, record = is_booked(id)
         if status == False:
-            return "No reservation Available. Please check the booking id"
+            return {"error": True, "message": "No reservation Available. Please check the booking id"}
         elif (record[5] == 'PENDING'):
-            return "Cannot add luggage facility!!! Flight is not confirmed."
+            return {"error": True, "message": "Cannot add luggage facility!!! Flight is not confirmed."}
         elif (record[10] == "YES"):
-            return "Luggage Facility Already Availed!!!"
+            return {"error": True, "message": "Luggage Facility Already Availed!!!"}
         else:
-            return add_luggage(id, card_number)
+            return {"error": False, "message": add_luggage(id, card_number)}
+
+    '''
+    Function to get the details of the booking
+        - validate booking - entry should be present
+        - returns the complete entry in db
+    '''
+    def details(data):
+        id = data['booking_id']
+        status, record = is_booked(id)
+        if status == False:
+            return {"error": True, "message": "No reservation Available. Please check the booking id"}
+        else:
+            return {"error": False, "data": record}
 
     if request.json['type'] == "booking":
         return booking(request.json['data'])
@@ -275,6 +305,8 @@ def root():
         return create_credit_card_user()
     elif request.json['type'] == "add-on":
         return add_on(request.json['data'])
+    elif request.json['type'] == "details":
+        return details(request.json['data'])
     else:
         return "Failed"
 

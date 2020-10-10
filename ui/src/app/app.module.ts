@@ -22,6 +22,7 @@ import { AddOnComponent } from './add-on/add-on.component';
 import { CancelBookingComponent } from './cancel-booking/cancel-booking.component';
 import { ChangeDateComponent } from './change-date/change-date.component';
 import { ConfirmBookingComponent } from './confirm-booking/confirm-booking.component';
+import { BookingDetailsComponent } from './booking-details/booking-details.component';
 
 @NgModule({
   declarations: [
@@ -31,7 +32,8 @@ import { ConfirmBookingComponent } from './confirm-booking/confirm-booking.compo
     AddOnComponent,
     CancelBookingComponent,
     ChangeDateComponent,
-    ConfirmBookingComponent
+    ConfirmBookingComponent,
+    BookingDetailsComponent
   ],
   imports: [
     BrowserModule,
