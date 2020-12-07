@@ -9,9 +9,9 @@ class AddOnActivity(Activity):
     def __init__(self, booking_id, card_no):
         self._booking_id = booking_id
         self._card_no = card_no
-        self._checker = None
-        self._update_credit = None
-        self._update_booking = None
+        self._check_booking_task = None
+        self._update_credit_task = None
+        self._update_booking_task = None
 
     def is_confirmed_booking(self, status):
         return status == 'CONFIRMED'
@@ -20,9 +20,9 @@ class AddOnActivity(Activity):
         return status == 'YES'
 
     def check_activity(self, booking_id):
-        self._checker = CheckBookingTask(booking_id)
+        self._check_booking_task = CheckBookingTask(booking_id)
         try:
-            return self._checker.perform_activity()
+            return self._check_booking_task.perform_activity()
         except NoBookingError as nbe:
             self.set_error_msg(nbe.message)
             logging.error('AddOn Activity: check_activity {}'.format(
@@ -35,9 +35,9 @@ class AddOnActivity(Activity):
             raise TypeError(self.get_error_msg())
 
     def update_credit_activity(self, card_no):
-        self._update_credit = UpdateCreditTask(card_no)
+        self._update_credit_task = UpdateCreditTask(card_no)
         try:
-            return self._update_credit.perform_activity()
+            return self._update_credit_task.perform_activity()
         except NoCreditCardError as nce:
             self.set_error_msg(nce.message)
             logging.error('AddOn Activity: update_credit_activity {}'.format(
@@ -51,9 +51,9 @@ class AddOnActivity(Activity):
             raise TypeError(self.get_error_msg())
 
     def update_booking_activity(self, booking_id):
-        self._update_booking = UpdateBookingTask(booking_id)
+        self._update_booking_task = UpdateBookingTask(booking_id)
         try:
-            return self._update_booking.perform_activity()
+            return self._update_booking_task.perform_activity()
         except:
             self.set_error_msg(
                 'Internal error while confirming booking')

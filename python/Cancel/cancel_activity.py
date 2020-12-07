@@ -10,7 +10,7 @@ from Cancel.cancel_task import CheckBookingTask, GetCreditDetailsTask, UpdateCre
 class CancelActivity(Activity):
     def __init__(self, booking_id):
         self._booking_id = booking_id
-        self._check_task = None
+        self._check_booking_task = None
         self._get_credit_task = None
         self._update_credit_task = None
         self._get_passenger_count_task = None
@@ -18,9 +18,9 @@ class CancelActivity(Activity):
         self._remove_passenger_task = None
 
     def check_activity(self, booking_id):
-        self._check_task = CheckBookingTask(booking_id)
+        self._check_booking_task = CheckBookingTask(booking_id)
         try:
-            return self._check_task.perform_activity()
+            return self._check_booking_task.perform_activity()
         except NoBookingError as nbe:
             self.set_error_msg(nbe.message)
             logging.error('PaymentSchedule Activity: check_activity {}'.format(

@@ -7,12 +7,12 @@ from Details.details_task import DetailsTask
 class DetailsActivity(Activity):
     def __init__(self, balance):
         self._balance = balance
-        self._details = None
+        self._details_task = None
 
     def details_activity(self, balance):
-        self._details = DetailsTask(balance)
+        self._details_task = DetailsTask(balance)
         try:
-            return self._details.perform_activity()
+            return self._details_task.perform_activity()
         except NoBookingError as nbe:
             self.set_error_msg(nbe.message)
             logging.error('Details Activity: details_activity {}'.format(

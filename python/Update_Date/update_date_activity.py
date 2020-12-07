@@ -9,20 +9,20 @@ class UpdateDateActivity(Activity):
     def __init__(self, booking_id, date):
         self._booking_id = booking_id
         self._date = date
-        self._getBooking = None
-        self._getPassengerCount = None
+        self._check_booking_task = None
+        self._passenger_count_task = None
         self._remove_schedule_task = None
-        self._checkSchedule = None
-        self._addSchedule = None
-        self._updateBooking = None
+        self._check_schedule_task = None
+        self._add_schedule_task = None
+        self._update_booking_task = None
 
     def is_confirmed_booking(self, status):
         return status == 'CONFIRMED'
 
     def check_activity(self, booking_id):
-        self._getBooking = CheckBookingTask(booking_id)
+        self._check_booking_task = CheckBookingTask(booking_id)
         try:
-            return self._getBooking.perform_activity()
+            return self._check_booking_task.perform_activity()
         except NoBookingError as nbe:
             self.set_error_msg(nbe.message)
             logging.error('PaymentSchedule Activity: check_activity {}'.format(
@@ -35,9 +35,9 @@ class UpdateDateActivity(Activity):
             raise TypeError(self.get_error_msg())
 
     def passenger_count_activity(self, flight_id):
-        self._getPassengerCount = GetNumberOfPassengerTask(flight_id)
+        self._passenger_count_task = GetNumberOfPassengerTask(flight_id)
         try:
-            return self._getPassengerCount.perform_activity()
+            return self._passenger_count_task.perform_activity()
         except TypeError as e:
             self.set_error_msg(e)
             logging.error('Get Passenger Count Activity: {}'.format(
@@ -55,9 +55,9 @@ class UpdateDateActivity(Activity):
             raise TypeError(e)
 
     def check_schedule(self, source, destination, date):
-        self._checkSchedule = CheckScheduleTask(source, destination, date)
+        self._check_schedule_task = CheckScheduleTask(source, destination, date)
         try:
-            return self._checkSchedule.perform_activity()
+            return self._check_schedule_task.perform_activity()
         except:
             self.set_error_msg('Internal error while checking flight status')
             logging.error('UpdateDate Activity: check_schedule {}'.format(
@@ -65,9 +65,9 @@ class UpdateDateActivity(Activity):
             raise TypeError(self.get_error_msg())
 
     def add_schedule(self, source, destination, date):
-        self._addSchedule = AddScheduleTask(source, destination, date)
+        self._add_schedule_task = AddScheduleTask(source, destination, date)
         try:
-            return self._addSchedule.perform_activity()
+            return self._add_schedule_task.perform_activity()
         except:
             self.set_error_msg(
                 'Internal error while adding new flight schedule')
@@ -76,9 +76,9 @@ class UpdateDateActivity(Activity):
             raise TypeError(self.get_error_msg())
     
     def update_booking(self, booking_id, date, flight_id):
-        self._updateBooking = UpdateBookingTask(booking_id, date, flight_id)
+        self._update_booking_task = UpdateBookingTask(booking_id, date, flight_id)
         try:
-            return self._updateBooking.perform_activity()
+            return self._update_booking_task.perform_activity()
         except:
             self.set_error_msg(
                 'Internal error while updating booking.')

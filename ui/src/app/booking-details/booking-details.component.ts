@@ -53,7 +53,7 @@ export class BookingDetailsComponent implements OnInit {
       name: new FormControl(data.name),
       bookingstatus: new FormControl(data.booking_status == 'PENDING' ? 'Pending' : 'Confirmed'),
       paymentmethod: new FormControl(data.payment_method == 'PENDING' ? 'Pending' : 'Credit Card'),
-      cardnumber: new FormControl((data.card_no == '' || data.card_no == null) ? 'Credit Card Not Added' : data[7]),
+      cardnumber: new FormControl((data.card_no == '' || data.card_no == null) ? 'Credit Card Not Added' : data.card_no),
       addon: new FormControl(data.add_on == 'NO' ? 'No add on Facility Availed' : 'Luggage Facility Added'),
       price: new FormControl(this._mainService.dictionary[data.flight_class]),
     });

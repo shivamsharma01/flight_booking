@@ -6,13 +6,13 @@ from common.util.dateutility import DateUtility
 
 class FieldValidator:
     def __init__(self, error_msg=None):
-        self.error_msg = error_msg
+        self._error_msg = error_msg
 
     def validate(self):
         pass
 
     def get_error_msg(self):
-        return self.error_msg
+        return self._error_msg
 
 
 class PastDateValidator(FieldValidator):

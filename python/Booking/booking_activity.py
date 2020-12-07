@@ -5,15 +5,15 @@ from Booking.booking_task import CheckScheduleTask, AddScheduleTask, GetSchedule
 class BookingScheduleActivity(Activity):
     def __init__(self, booking):
         self._booking = booking
-        self._checker = None
-        self._adder = None
-        self._getter = None
-        self._add_booking = None
+        self._check_schedule_task = None
+        self._add_schedule_task = None
+        self._get_schedule_task = None
+        self._add_booking_task = None
 
     def check_schedule(self, source, destination, date):
-        self._checker = CheckScheduleTask(source, destination, date)
+        self._check_schedule_task = CheckScheduleTask(source, destination, date)
         try:
-            return self._checker.perform_activity()
+            return self._check_schedule_task.perform_activity()
         except:
             self.set_error_msg('Internal error while checking flight status')
             logging.error('Schedule Activity: check_schedule {}'.format(
@@ -21,9 +21,9 @@ class BookingScheduleActivity(Activity):
             raise TypeError(self.get_error_msg())
 
     def add_schedule(self, source, destination, date):
-        self._adder = AddScheduleTask(source, destination, date)
+        self._add_schedule_task = AddScheduleTask(source, destination, date)
         try:
-            self._adder.perform_activity()
+            self._add_schedule_task.perform_activity()
         except:
             self.set_error_msg(
                 'Internal error while adding new flight schedule')
@@ -32,9 +32,9 @@ class BookingScheduleActivity(Activity):
             raise TypeError(self.get_error_msg())
 
     def get_schedule(self, source, destination, date):
-        self._getter = GetScheduleTask(source, destination, date)
+        self._get_schedule_task = GetScheduleTask(source, destination, date)
         try:
-            return self._getter.perform_activity()
+            return self._get_schedule_task.perform_activity()
         except:
             self.set_error_msg(
                 'Internal error while adding get flight schedule')
@@ -43,9 +43,9 @@ class BookingScheduleActivity(Activity):
             raise TypeError(self.get_error_msg())
 
     def add_booking(self, booking, flight_id):
-        self._add_booking = AddBookingTask(booking, flight_id)
+        self._add_booking_task = AddBookingTask(booking, flight_id)
         try:
-            return self._add_booking.perform_activity()
+            return self._add_booking_task.perform_activity()
         except:
             self.set_error_msg('Internal error while adding the new passenger')
             logging.error('Schedule Activity: add_booking {}'.format(
