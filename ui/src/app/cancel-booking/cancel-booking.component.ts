@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { BookingService } from '../booking/booking.service';
+import { MainService } from '../service/main.service';
 
 @Component({
   selector: 'app-cancel-booking',
@@ -10,7 +10,7 @@ import { BookingService } from '../booking/booking.service';
 export class CancelBookingComponent implements OnInit {
   cancelForm: FormGroup;
 
-  constructor(private _bookingService: BookingService) { }
+  constructor(private _mainService: MainService) { }
 
   ngOnInit(): void {
     this.initForms();
@@ -23,15 +23,15 @@ export class CancelBookingComponent implements OnInit {
   }
 
   cancelBooking() {
-    if (this._bookingService.validateCancel(this.cancelForm.get('bookingid').value)) {
-      this._bookingService.cancelTicket(this.cancelForm.get('bookingid').value).subscribe((data: any) => {
+    if (this._mainService.validateCancel(this.cancelForm.get('bookingid').value)) {
+      this._mainService.cancelTicket(this.cancelForm.get('bookingid').value).subscribe((data: any) => {
         console.log(data);
         data = JSON.parse(data);
         if (data.error == false) {
-          this._bookingService.callMessageService("success", data.message);
+          this._mainService.callMessageService("success", data.success_msg);
         } else {
           console.log(data.message);
-          this._bookingService.callMessageService('error', data.message);
+          this._mainService.callMessageService('error', data.message);
         }
         this.initForms();
       });

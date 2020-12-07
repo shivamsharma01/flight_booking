@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { BookingService } from '../booking/booking.service';
+import { MainService } from '../service/main.service';
 
 @Component({
   selector: 'app-confirm-booking',
@@ -9,7 +9,7 @@ import { BookingService } from '../booking/booking.service';
 })
 export class ConfirmBookingComponent implements OnInit {
   confirmForm: FormGroup;
-  constructor(private _bookingService: BookingService) { }
+  constructor(private _mainService: MainService) { }
 
   ngOnInit(): void {
     this.initForms();
@@ -23,15 +23,15 @@ export class ConfirmBookingComponent implements OnInit {
   }
 
   makePayment() {
-    if (this._bookingService.validateCreditCard(this.confirmForm.get('bookingid').value, this.confirmForm.value)) {
-      this._bookingService.confirmBooking(this.confirmForm.get('bookingid').value, this.confirmForm.value).subscribe((data: any) => {
+    if (this._mainService.validateCreditCard(this.confirmForm.get('bookingid').value, this.confirmForm.value)) {
+      this._mainService.confirmBooking(this.confirmForm.get('bookingid').value, this.confirmForm.value).subscribe((data: any) => {
         console.log(data);
         data = JSON.parse(data);
         if (data.error == false) {
-          this._bookingService.callMessageService("success", data.message);
+          this._mainService.callMessageService("success", data.success_msg);
         } else {
           console.log(data.message);
-          this._bookingService.callMessageService('error', data.message);
+          this._mainService.callMessageService('error', data.message);
         }
         this.initForms();
       });

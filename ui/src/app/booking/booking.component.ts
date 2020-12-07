@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { BookingService } from './booking.service';
+import { MainService } from '../service/main.service';
 
 @Component({
   selector: 'app-booking',
@@ -14,7 +14,7 @@ export class BookingComponent implements OnInit {
   clickedBookTicket: boolean;
   booking_id: number;
   price: number;
-  constructor(private _bookingService: BookingService) { }
+  constructor(private _mainService: MainService) { }
 
   ngOnInit(): void {
     this.initForms();
@@ -22,31 +22,31 @@ export class BookingComponent implements OnInit {
 
   bookTicket() {
     console.log(this.bookingForm.value)
-    if (this._bookingService.validateBooking(this.bookingForm.value)) {
-      this._bookingService.bookTicket(this.bookingForm.value).subscribe((data: any) => {
+    if (this._mainService.validateBooking(this.bookingForm.value)) {
+      this._mainService.bookTicket(this.bookingForm.value).subscribe((data: any) => {
         console.log(data);
         data = JSON.parse(data);
         if (data.error == false) {
-          this.booking_id = data.message.split('-')[1];
-          this._bookingService.callMessageService("success", "Seat reserved. Booking ID: " + this.booking_id);
+          this.booking_id = data.booking_id;
+          this._mainService.callMessageService("success", "Seat reserved. Booking ID: " + this.booking_id);
           this.clickedBookTicket = true;
         } else {
-          this._bookingService.callMessageService('error', data.message);
+          this._mainService.callMessageService('error', data.message);
         }
       });
     }
   }
 
   makePayment() {
-    if (this._bookingService.validateCreditCard(this.booking_id, this.paymentForm.value)) {
-      this._bookingService.confirmBooking(this.booking_id, this.paymentForm.value).subscribe((data: any) => {
+    if (this._mainService.validateCreditCard(this.booking_id, this.paymentForm.value)) {
+      this._mainService.confirmBooking(this.booking_id, this.paymentForm.value).subscribe((data: any) => {
         console.log(data);
         data = JSON.parse(data);
         if (data.error == false) {
-          this._bookingService.callMessageService("success", data.message);
+          this._mainService.callMessageService("success", data.success_msg);
         } else {
           console.log(data.message);
-          this._bookingService.callMessageService('error', data.message);
+          this._mainService.callMessageService('error', data.message);
         }
         this.initForms();
       });
@@ -54,15 +54,15 @@ export class BookingComponent implements OnInit {
   }
 
   cancelBooking() {
-    if (this._bookingService.validateCancel(this.booking_id)) {
-      this._bookingService.cancelTicket(this.booking_id).subscribe((data: any) => {
+    if (this._mainService.validateCancel(this.booking_id)) {
+      this._mainService.cancelTicket(this.booking_id).subscribe((data: any) => {
         console.log(data);
         data = JSON.parse(data);
         if (data.error == false) {
-          this._bookingService.callMessageService("success", data.message);
+          this._mainService.callMessageService("success", data.success_msg);
         } else {
           console.log(data.message);
-          this._bookingService.callMessageService('error', data.message);
+          this._mainService.callMessageService('error', data.message);
         }
         this.initForms();
       });
@@ -84,7 +84,7 @@ export class BookingComponent implements OnInit {
       ccNumber: new FormControl('')
     });
     this.bookingForm.get('class').valueChanges.subscribe(val => {
-      this.price = this._bookingService.dictionary[val];
+      this.price = this._mainService.dictionary[val];
     })
   }
 

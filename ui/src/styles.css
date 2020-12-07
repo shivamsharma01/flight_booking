@@ -12,27 +12,11 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
     padding:10px;
 }
 
-.parent2{ background: #999999;padding:10px;overflow: visible;}
-
-.inner2 {
-    overflow: visible;
-    padding:10px;
-}
-
 .datepicker {
     float: left;
     margin:20px;
     padding: 10px;
   }
-
-.child {
-    float: left;
-    margin:20px;
-}
-.child2 {
-  float: left;
-  margin:20px;
-}
 
 .center {
     margin: auto;
@@ -59,4 +43,21 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 }
 .bookClass {
   padding: 35px 0px 0px 80px;
+}
+
+.image .p-tabview .p-tabview-panels {
+  background-color: transparent;
+  position: relative;
+}
+
+.p-tabview-panels {
+  top: 75px;
+}
+
+.parent{
+  border-radius: 20px;
+}
+
+.p-tabview .p-tabview-nav li {
+  margin: auto;
 }

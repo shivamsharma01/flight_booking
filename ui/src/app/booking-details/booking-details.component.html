@@ -20,6 +20,7 @@
     </form>
 </div>
 <div class="parent" *ngIf="clickedDetails">
+    <h4 style="text-align: center; text-transform: capitalize;">Showing Details for BookingID: {{detailsForm.get('bookingid').value}}</h4>
     <form [formGroup]="bookingForm">
         <div class="container">
             <div class="row">

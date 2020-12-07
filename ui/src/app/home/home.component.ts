@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { MainService } from '../service/main.service';
 
 @Component({
   selector: 'app-home',
@@ -8,11 +7,12 @@ import { MainService } from '../service/main.service';
 })
 export class HomeComponent implements OnInit {
 
-  testObj : any
-
-  constructor(private _mainService:MainService) { }
+  constructor() { }
 
   ngOnInit(): void {
-    this._mainService.getData().subscribe(data => this.testObj = data)
+  }
+
+  getUrl() {
+    return "url('assets/1.jpg')";
   }
 }

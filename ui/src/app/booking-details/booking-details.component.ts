@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { BookingService } from '../booking/booking.service';
+import { MainService } from '../service/main.service';
 
 @Component({
   selector: 'app-booking-details',
@@ -13,7 +13,7 @@ export class BookingDetailsComponent implements OnInit {
   clickedDetails: boolean;
   travelClass: any[] = [{ label: 'Ecomomy', value: 'E' }, { label: 'Business', value: 'B' }, { label: 'First class', value: 'F' }];
 
-  constructor(private _bookingService: BookingService) { }
+  constructor(private _mainService: MainService) { }
 
   ngOnInit(): void {
     this.initForms();
@@ -27,17 +27,17 @@ export class BookingDetailsComponent implements OnInit {
   }
 
   viewBooking() {
-    if (this._bookingService.validateCancel(this.detailsForm.get('bookingid').value)) {
-      this._bookingService.viewTicket(this.detailsForm.get('bookingid').value).subscribe((data: any) => {
+    if (this._mainService.validateCancel(this.detailsForm.get('bookingid').value)) {
+      this._mainService.viewTicket(this.detailsForm.get('bookingid').value).subscribe((data: any) => {
         console.log(data);
         data = JSON.parse(data);
         if (data.error == false) {
-          this._bookingService.callMessageService("success", data.message);
-          this.initDetails(data.data)
+          this._mainService.callMessageService("success", 'Info Retrieved for bookingid:'+this.detailsForm.get('bookingid').value);
+          this.initDetails(data)
           this.clickedDetails = true
         } else {
           console.log(data.message);
-          this._bookingService.callMessageService('error', data.message);
+          this._mainService.callMessageService('error', data.message);
         }
       });
     }
@@ -45,17 +45,17 @@ export class BookingDetailsComponent implements OnInit {
   //disable() 
   initDetails(data) {
     this.bookingForm = new FormGroup({
-      src: new FormControl(data[2]),
-      destination: new FormControl(data[3]),
-      departureDate: new FormControl(new Date(data[8]).toLocaleDateString()),
-      flightId: new FormControl(data[9]),
-      class: new FormControl(this.getClass(data[4])),
-      name: new FormControl(data[1]),
-      bookingstatus: new FormControl(data[5] == 'PENDING' ? 'Pending' : 'Confirmed'),
-      paymentmethod: new FormControl(data[6] == 'PENDING' ? 'Pending' : 'Credit Card'),
-      cardnumber: new FormControl((data[7] == '' || data[7] == null) ? 'Credit Card Not Added' : data[7]),
-      addon: new FormControl(data[10] == 'NO' ? 'No add on Facility Availed' : 'Luggage Facility Added'),
-      price: new FormControl(this._bookingService.dictionary[data[4]]),
+      src: new FormControl(data.src),
+      destination: new FormControl(data.dest),
+      departureDate: new FormControl(new Date(data.travel_date).toLocaleDateString()),
+      flightId: new FormControl(data.flight_id),
+      class: new FormControl(this.getClass(data.flight_class)),
+      name: new FormControl(data.name),
+      bookingstatus: new FormControl(data.booking_status == 'PENDING' ? 'Pending' : 'Confirmed'),
+      paymentmethod: new FormControl(data.payment_method == 'PENDING' ? 'Pending' : 'Credit Card'),
+      cardnumber: new FormControl((data.card_no == '' || data.card_no == null) ? 'Credit Card Not Added' : data[7]),
+      addon: new FormControl(data.add_on == 'NO' ? 'No add on Facility Availed' : 'Luggage Facility Added'),
+      price: new FormControl(this._mainService.dictionary[data.flight_class]),
     });
     this.bookingForm.disable();
   }

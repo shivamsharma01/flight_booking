@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { BookingService } from '../booking/booking.service';
+import { MainService } from '../service/main.service';
 
 @Component({
   selector: 'app-add-on',
@@ -9,7 +9,7 @@ import { BookingService } from '../booking/booking.service';
 })
 export class AddOnComponent implements OnInit {
   addOnForm: FormGroup;
-  constructor(private _bookingService: BookingService) { }
+  constructor(private _mainService: MainService) { }
 
   ngOnInit(): void {
     this.initForms();
@@ -23,15 +23,15 @@ export class AddOnComponent implements OnInit {
   }
 
   makePayment() {
-    if (this._bookingService.validateCreditCard(this.addOnForm.get('bookingid').value, this.addOnForm.value)) {
-      this._bookingService.makeAddOn(this.addOnForm.value).subscribe((data: any) => {
+    if (this._mainService.validateCreditCard(this.addOnForm.get('bookingid').value, this.addOnForm.value)) {
+      this._mainService.makeAddOn(this.addOnForm.value).subscribe((data: any) => {
         console.log(data);
         data = JSON.parse(data);
         if (data.error == false) {
-          this._bookingService.callMessageService("success", data.message);
+          this._mainService.callMessageService("success", data.success_msg);
         } else {
           console.log(data.message);
-          this._bookingService.callMessageService('error', data.message);
+          this._mainService.callMessageService('error', data.message);
         }
         this.initForms();
       });

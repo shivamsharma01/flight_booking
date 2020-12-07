@@ -16,3 +16,13 @@
     line-height: 1.5;
     margin: 0;
 }
+
+.card {
+    background-color: transparent;
+}
+
+h1 {
+    text-align: center;
+    color: antiquewhite;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
