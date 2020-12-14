@@ -55,7 +55,7 @@ export class BookingComponent implements OnInit {
 
   cancelBooking() {
     if (this._mainService.validateCancel(this.booking_id)) {
-      this._mainService.cancelTicket(this.booking_id).subscribe((data: any) => {
+      this._mainService.cancelTicket(''+this.booking_id).subscribe((data: any) => {
         console.log(data);
         data = JSON.parse(data);
         if (data.error == false) {

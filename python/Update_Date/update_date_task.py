@@ -105,7 +105,7 @@ class UpdateBookingTask(Task):
         self._booking_id = booking_id
         self._date = date
         self._flight_id = flight_id
-
+        
     def perform_activity(self):
         try:
             logging.info('UpdateBooking Task: update booking timings.')
